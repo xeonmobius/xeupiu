@@ -8,13 +8,14 @@ You must **own** a Playstation and a copy of Tokimeki Memorial.
 
 ### Setting up the emulator
 
-1. Download the [latest version of the DuckStation emulator ](https://www.duckstation.org/) (latest version tested: 0.1-6759-gc015039a (dev))
+1. Download the [latest version of the DuckStation emulator ](https://www.duckstation.org/) (latest version tested: [v0.1-7836](https://github.com/stenzek/duckstation/releases/tag/v0.1-7836))
 2. Install the emulator and set it up with your PSX BIOS
 3. Download the Tokimeki Memorial - Forever With You (Rev 4) ROM in Japanese
 4. Configure the emulator by accessing Settings -> Graphics and changing:
 	1. Aspect ratio: 4:3
-	2. Crop: All Borders
+	2. Crop: "All Borders (Aspect Uncorrected)", or if that option is not available, then "All Borders"
 	3. Scaling: Nearest Neighbor (Integer)
+5. Make sure that the Toolbar is disabled (toggle it off in "View > Toolbar")
 
 #### Linux specific
 
@@ -75,9 +76,9 @@ Try reducing the "History size" parameter in the XEUPIU menu from 10 to 5. This 
 
 Press the `SQUARE` button until you cycle the cursor icon back to the default one (blue pointing hand). **The tool will produce mistakes if the default cursor is not used.**
 
-### 6. I have set up the tool correctly, but when I try to run it, it crashes immediately!
+### 6. The tool gets stuck on "Fixing off-by-one error in resolution scaling"!
 
-There are some known Windows configurations that affect the tool in its current form; we are working on fixing this for future versions. In the meantime, before opening the tool, please guarantee that:
+First, please make sure that the emulator has been set up correctly according to the instructions above. If everything appears fine but this errors still keeps popping up, try guaranteeing that:
 
 1. Your Windows "scale and layout" is set to 100%.
 2. You are currently only using one monitor.
