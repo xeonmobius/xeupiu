@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import os
 import pathlib
+import signal
+import subprocess
 import tkinter as tk
 from tkinter import scrolledtext, ttk
 import sys
@@ -11,6 +14,150 @@ from xeupiu.app import App
 from xeupiu.config import CONFIG
 from xeupiu.error_window import display_error
 from xeupiu.screenshot import get_window_by_title, get_window_image
+
+
+def _find_duckstation_pids():
+    """Return list of (pid_str, cmdline_str) tuples for running DuckStation processes."""
+    try:
+        result = subprocess.run(
+            ["pgrep", "-af", CONFIG["window_title"]],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode != 0:
+            return []
+        pids = []
+        for line in result.stdout.strip().split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(None, 1)
+            if len(parts) == 2:
+                pids.append((parts[0], parts[1]))
+        return pids
+    except Exception:
+        return []
+
+
+def _show_xwayland_dialog(command, pids):
+    """Show 3-button dialog. Returns True if relaunched, False otherwise."""
+    result = [None]
+
+    dlg = tk.Toplevel()
+    dlg.title("XWayland Required")
+    dlg.transient()
+    dlg.grab_set()
+    dlg.resizable(False, False)
+
+    tk.Label(
+        dlg,
+        text="DuckStation is running under native Wayland.\n"
+             "XEUPIU needs it on XWayland to capture screenshots.",
+        wraplength=400,
+        justify="left",
+        padx=12,
+        pady=(12, 0),
+    ).pack()
+
+    tk.Label(
+        dlg,
+        text=command,
+        wraplength=400,
+        justify="left",
+        padx=12,
+        pady=(6, 0),
+        fg="#666",
+    ).pack()
+
+    btn_frame = tk.Frame(dlg, padx=12, pady=12)
+    btn_frame.pack(fill="x")
+
+    def on_relaunch():
+        result[0] = "relaunch"
+        dlg.destroy()
+
+    def on_copy():
+        result[0] = "copy"
+        dlg.destroy()
+
+    def on_cancel():
+        result[0] = "cancel"
+        dlg.destroy()
+
+    tk.Button(btn_frame, text="Relaunch", command=on_relaunch, width=12).pack(side="left", padx=(0, 4))
+    tk.Button(btn_frame, text="Copy command", command=on_copy, width=14).pack(side="left", padx=4)
+    tk.Button(btn_frame, text="Cancel", command=on_cancel, width=10).pack(side="right")
+
+    dlg.wait_window()
+
+    if result[0] == "relaunch":
+        return _relaunch_duckstation(pids)
+    elif result[0] == "copy":
+        try:
+            root = tk._default_root
+            if root:
+                root.clipboard_clear()
+                root.clipboard_append(command)
+        except Exception:
+            pass
+        print(f"Copied to clipboard. To relaunch DuckStation:\n  {command}")
+    return False
+
+
+def _relaunch_duckstation(pids):
+    """Kill DuckStation processes, respawn with XWayland env vars. Returns True if window appears."""
+    for pid_str, _ in pids:
+        try:
+            os.kill(int(pid_str), signal.SIGTERM)
+        except (ProcessLookupError, PermissionError, ValueError):
+            pass
+
+    time.sleep(1)
+
+    for _, cmdline in pids:
+        try:
+            parts = cmdline.split()
+            subprocess.Popen(
+                ["env", "-u", "WAYLAND_DISPLAY", "QT_QPA_PLATFORM=xcb"] + parts,
+                start_new_session=True,
+            )
+            break
+        except Exception as e:
+            print(f"Failed to relaunch DuckStation: {e}")
+            return False
+
+    for _ in range(40):
+        time.sleep(0.25)
+        try:
+            get_window_by_title(CONFIG["window_title"])
+            print("DuckStation relaunched under XWayland.")
+            return True
+        except ValueError:
+            continue
+
+    print("Error: DuckStation did not reappear on XWayland within 10 seconds.")
+    return False
+
+
+def _ensure_xwayland():
+    """Check Wayland + DuckStation state. Show dialog if needed. Returns True to proceed, False to abort."""
+    if sys.platform != "linux":
+        return True
+    if not os.environ.get("WAYLAND_DISPLAY"):
+        return True
+
+    try:
+        get_window_by_title(CONFIG["window_title"])
+        return True
+    except ValueError:
+        pass
+
+    pids = _find_duckstation_pids()
+    if not pids:
+        return True
+
+    original_cmd = pids[0][1]
+    xwayland_cmd = f"env -u WAYLAND_DISPLAY QT_QPA_PLATFORM=xcb {original_cmd}"
+    return _show_xwayland_dialog(xwayland_cmd, pids)
 
 
 class StdoutRedirector:
@@ -180,6 +327,11 @@ class XeupiuControlPanel:
         # that we're doing something.
         print("Loading...", flush=True)
         self.root.update_idletasks()
+
+        if not _ensure_xwayland():
+            print("Aborted. Fix DuckStation's launch environment and try again.")
+            return
+
         self.app = App()
 
         CONFIG['save']['player']['en_name'] = self.en_name_entry.get()
