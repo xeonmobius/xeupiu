@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 import pathlib
+import shlex
 import signal
 import subprocess
 import tkinter as tk
@@ -115,7 +116,7 @@ def _relaunch_duckstation(pids):
 
     for _, cmdline in pids:
         try:
-            parts = cmdline.split()
+            parts = shlex.split(cmdline)
             subprocess.Popen(
                 ["env", "-u", "WAYLAND_DISPLAY", "QT_QPA_PLATFORM=xcb"] + parts,
                 start_new_session=True,
