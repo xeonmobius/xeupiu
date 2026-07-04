@@ -63,6 +63,10 @@
         },
         "deepl": {
             "api_key": ""
+        },
+        "sugoi": {
+            "device": "cpu",
+            "beam_size": 5
         }
     }
 }

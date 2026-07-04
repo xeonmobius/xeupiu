@@ -1,5 +1,6 @@
 data/log/
 data/test/
+data/models/
 xeupiu.spec
 dist/
 build/

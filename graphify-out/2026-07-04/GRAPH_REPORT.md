@@ -1,0 +1,163 @@
+# Graph Report - .  (2026-07-04)
+
+## Corpus Check
+- Corpus is ~21,448 words - fits in a single context window. You may not need a graph.
+
+## Summary
+- 296 nodes · 570 edges · 28 communities (23 shown, 5 thin omitted)
+- Extraction: 78% EXTRACTED · 20% INFERRED · 0% AMBIGUOUS · INFERRED: 113 edges (avg confidence: 0.65)
+- Token cost: 0 input · 0 output
+
+## Community Hubs (Navigation)
+- [[_COMMUNITY_App Core|App Core]]
+- [[_COMMUNITY_Module Imports|Module Imports]]
+- [[_COMMUNITY_Database & Text|Database & Text]]
+- [[_COMMUNITY_Overlay Base|Overlay Base]]
+- [[_COMMUNITY_Character Creation|Character Creation]]
+- [[_COMMUNITY_Confession Handling|Confession Handling]]
+- [[_COMMUNITY_Character Recognition|Character Recognition]]
+- [[_COMMUNITY_CLI Entry & Errors|CLI Entry & Errors]]
+- [[_COMMUNITY_Linux Screenshot|Linux Screenshot]]
+- [[_COMMUNITY_Project Docs|Project Docs]]
+- [[_COMMUNITY_Confession Database|Confession Database]]
+- [[_COMMUNITY_Configuration|Configuration]]
+- [[_COMMUNITY_Selectable Rect Overlay|Selectable Rect Overlay]]
+- [[_COMMUNITY_Save Selection Overlay|Save Selection Overlay]]
+- [[_COMMUNITY_Windows Screenshot|Windows Screenshot]]
+- [[_COMMUNITY_Character DB Script|Character DB Script]]
+- [[_COMMUNITY_Attribute Overlay|Attribute Overlay]]
+- [[_COMMUNITY_Textbox Overlay|Textbox Overlay]]
+- [[_COMMUNITY_Title Screen Overlay|Title Screen Overlay]]
+- [[_COMMUNITY_Dev Setup & Packaging|Dev Setup & Packaging]]
+- [[_COMMUNITY_Package Scripts|Package Scripts]]
+- [[_COMMUNITY_Gotchas|Gotchas]]
+- [[_COMMUNITY_Credits|Credits]]
+- [[_COMMUNITY_Package Root|Package Root]]
+
+## God Nodes (most connected - your core abstractions)
+1. `App` - 26 edges
+2. `OverlayWindow` - 25 edges
+3. `PoorCR` - 22 edges
+4. `Database` - 19 edges
+5. `Translator` - 15 edges
+6. `SelectableRectOverlay` - 14 edges
+7. `ScrollingEpilogueHandler` - 13 edges
+8. `get_count_by_equality()` - 11 edges
+9. `ConfessionHandler` - 10 edges
+10. `NotebookDatabase` - 10 edges
+
+## Surprising Connections (you probably didn't know these)
+- `Project Logo` ----> `Project Purpose`  [0.8]
+  data/resources/logo.png → README.md
+- `App Icon` ----> `Project Overview`  [0.8]
+  data/resources/icon_small.png → AGENTS.md
+- `Emulator Setup` ----> `Project Purpose`  [0.9]
+  tutorial.md → README.md
+- `App` --uses--> `AttributeOverlayWindow`  [INFERRED]
+  src/xeupiu/app.py → src/xeupiu/attribute_overlay.py
+- `App` --uses--> `ConfessionHandler`  [INFERRED]
+  src/xeupiu/app.py → src/xeupiu/confession_handler.py
+
+## Import Cycles
+- None detected.
+
+## Communities (28 total, 5 thin omitted)
+
+### Community 0 - "App Core"
+Cohesion: 0.07
+Nodes (16): App, CharacterCreationHandler, format_translated_text(), Image, ndarray, WeekdayOverlayWindow, YearMonthDayOverlayWindow, NotebookDatabase (+8 more)
+
+### Community 1 - "Module Imports"
+Cohesion: 0.14
+Nodes (4): # TODO: many of these can be reintegrated within the cue system, to optimize per, Error message windows.  Currently we are using xdialog, but this could change., check_is_text_empty(), separate_into_lines()
+
+### Community 2 - "Database & Text"
+Cohesion: 0.17
+Nodes (3): Database, NameDatabase, TextDatabase
+
+### Community 3 - "Overlay Base"
+Cohesion: 0.14
+Nodes (11): OverlayWindow, Image, ndarray, Detects whether the game object to be overlayed is present in the screenshot., Hides the overlay if it is not needed., Hides the overlay window., A semi-transparent window that displays text on top of the game window., Shows the overlay window. (+3 more)
+
+### Community 4 - "Character Creation"
+Cohesion: 0.18
+Nodes (15): detect_character_creation_player(), detect_character_creation_shiori(), Image, ndarray, convert_birthday_to_str(), convert_damage_jp2en(), convert_date_jp2en(), convert_date_to_en_str() (+7 more)
+
+### Community 5 - "Confession Handling"
+Cohesion: 0.19
+Nodes (16): detect_confession(), detect_confession_character(), ndarray, Image, ndarray, get_count_by_equality(), get_count_by_thresholds(), detect_ending_game_save_menu() (+8 more)
+
+### Community 6 - "Character Recognition"
+Cohesion: 0.14
+Nodes (11): extract_characters(), pad_char(), trim_char(), load_character_db(), Image, Gets the closest character match for a given image. This is done by comparing th, Loads the character database from the 'data/characters' folder. This is done by, Calibrates the OCR by finding the offset of the text in the image. This is done (+3 more)
+
+### Community 7 - "CLI Entry & Errors"
+Cohesion: 0.15
+Nodes (5): display_error(), Display an error message with the given window title and message., main(), StdoutRedirector, XeupiuControlPanel
+
+### Community 8 - "Linux Screenshot"
+Cohesion: 0.22
+Nodes (9): get_window_base_dims(), get_window_by_title(), get_window_image(), _get_xwin(), Image, Returns the window ID of the window with the given title.     If there are multi, Returns a PIL image of the window with the given ID.      :param window_id: The, Returns the position and size of the window with the given ID.      :param windo (+1 more)
+
+### Community 9 - "Project Docs"
+Cohesion: 0.20
+Nodes (10): Architecture, Project Overview, Project Phases, Project Purpose, Textractor Comparison, Emulator Setup, FAQ, Translation Backend Setup (+2 more)
+
+### Community 10 - "Confession Database"
+Cohesion: 0.27
+Nodes (3): ConfessionDatabase, ConfessionHandler, ConfessionSubtitleOverlay
+
+### Community 11 - "Configuration"
+Cohesion: 0.27
+Nodes (3): BordersDict, Configuration, TypedDict
+
+### Community 12 - "Selectable Rect Overlay"
+Cohesion: 0.36
+Nodes (4): is_str_empty(), Image, ndarray, SelectableRectOverlay
+
+### Community 13 - "Save Selection Overlay"
+Cohesion: 0.36
+Nodes (3): Image, ndarray, SaveSelectionOverlayWindow
+
+### Community 14 - "Windows Screenshot"
+Cohesion: 0.33
+Nodes (6): get_window_base_dims(), get_window_by_title(), get_window_image(), Returns the window ID of the window with the given title.     If there are multi, Returns a PIL image of the window with the given ID.      :param window_id: The, Returns the position and size of the window with the given ID.      :param windo
+
+### Community 16 - "Attribute Overlay"
+Cohesion: 0.33
+Nodes (3): AttributeOverlayWindow, Image, ndarray
+
+### Community 17 - "Textbox Overlay"
+Cohesion: 0.33
+Nodes (3): Image, ndarray, TextboxOverlayWindow
+
+### Community 18 - "Title Screen Overlay"
+Cohesion: 0.33
+Nodes (3): Image, ndarray, TitleScreenOverlayWindow
+
+### Community 19 - "Dev Setup & Packaging"
+Cohesion: 0.67
+Nodes (3): Setup Instructions, Development Setup, Release Packaging
+
+## Knowledge Gaps
+- **13 isolated node(s):** `package_executable.sh script`, `xeupiu`, `Architecture`, `Gotchas`, `Textractor Comparison` (+8 more)
+  These have ≤1 connection - possible missing edges or undocumented components.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+
+## Suggested Questions
+_Questions this graph is uniquely positioned to answer:_
+
+- **Why does `App` connect `App Core` to `Module Imports`, `Database & Text`, `Overlay Base`, `CLI Entry & Errors`, `Confession Database`, `Selectable Rect Overlay`, `Save Selection Overlay`, `Attribute Overlay`, `Textbox Overlay`, `Title Screen Overlay`?**
+  _High betweenness centrality (0.192) - this node is a cross-community bridge._
+- **Why does `OverlayWindow` connect `Overlay Base` to `App Core`, `Module Imports`, `Confession Database`, `Selectable Rect Overlay`, `Save Selection Overlay`, `Attribute Overlay`, `Textbox Overlay`, `Title Screen Overlay`?**
+  _High betweenness centrality (0.161) - this node is a cross-community bridge._
+- **Why does `PoorCR` connect `App Core` to `Module Imports`, `Character Recognition`, `Linux Screenshot`, `Selectable Rect Overlay`, `Character DB Script`?**
+  _High betweenness centrality (0.142) - this node is a cross-community bridge._
+- **Are the 20 inferred relationships involving `App` (e.g. with `AttributeOverlayWindow` and `CharacterCreationHandler`) actually correct?**
+  _`App` has 20 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 13 inferred relationships involving `OverlayWindow` (e.g. with `App` and `AttributeOverlayWindow`) actually correct?**
+  _`OverlayWindow` has 13 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 10 inferred relationships involving `PoorCR` (e.g. with `App` and `.__init__()`) actually correct?**
+  _`PoorCR` has 10 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 7 inferred relationships involving `Database` (e.g. with `App` and `ConfessionDatabase`) actually correct?**
+  _`Database` has 7 INFERRED edges - model-reasoned connections that need verification._

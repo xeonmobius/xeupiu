@@ -5,12 +5,18 @@ from xeupiu.config import CONFIG
 
 import openai
 import deepl
+import ctranslate2
+import sentencepiece as spm
+from huggingface_hub import snapshot_download
 
 from xeupiu.constants import format_translated_text
 from xeupiu.database import Database
 
 OPENING_QUOTES = ["「", "『", "【", "（", "［", "《", "〈", "〔", "｛", "〖", "〘", "〚", "〝"]
 CLOSING_QUOTES = ["」", "』", "】", "）", "］", "》", "〉", "〕", "｝", "〗", "〙", "〛", "〞"]
+
+SUGOI_MODEL_REPO = "entai2965/sugoi-v4-ja-en-ctranslate2"
+SUGOI_MODEL_DIR = os.path.join("data", "models", "sugoi-v4-ja-en")
 
 openai.organization = CONFIG["translation"]["openai"]["organization"]
 openai.api_key = CONFIG["translation"]["openai"]["api_key"]
@@ -21,6 +27,9 @@ class Translator():
     def __init__(self):
         self.backend = CONFIG["translation"]["backend"]
         self.deepl_model = None
+        self.sugoi_translator = None
+        self.sugoi_sp_ja = None
+        self.sugoi_sp_en = None
 
     def translate_openai(self, desc):
         completion = openai.ChatCompletion.create(
@@ -63,6 +72,34 @@ class Translator():
 
         return self.deepl_model.translate_text(text, source_lang="JA", target_lang=CONFIG["translation"]["lang"]).text
 
+    def _ensure_sugoi_loaded(self):
+        if self.sugoi_translator is not None:
+            return
+
+        if not os.path.isdir(SUGOI_MODEL_DIR) or not os.listdir(SUGOI_MODEL_DIR):
+            print(f"Sugoi model not found at '{SUGOI_MODEL_DIR}'. Downloading from HuggingFace (~1.5GB, one-time)...")
+            os.makedirs(SUGOI_MODEL_DIR, exist_ok=True)
+            snapshot_download(repo_id=SUGOI_MODEL_REPO, local_dir=SUGOI_MODEL_DIR)
+            print("Sugoi model download complete.")
+
+        device = CONFIG["translation"]["sugoi"]["device"]
+        self.sugoi_translator = ctranslate2.Translator(SUGOI_MODEL_DIR, device=device)
+
+        spm_dir = os.path.join(SUGOI_MODEL_DIR, "spm")
+        self.sugoi_sp_ja = spm.SentencePieceProcessor(os.path.join(spm_dir, "spm.ja.nopretok.model"))
+        self.sugoi_sp_en = spm.SentencePieceProcessor(os.path.join(spm_dir, "spm.en.nopretok.model"))
+        print(f"Sugoi model loaded (device={device}).")
+
+    def translate_sugoi(self, text):
+        self._ensure_sugoi_loaded()
+
+        beam_size = CONFIG["translation"]["sugoi"]["beam_size"]
+        tokenized = [self.sugoi_sp_ja.encode(text, out_type=str)]
+        results = self.sugoi_translator.translate_batch(source=tokenized, beam_size=beam_size)
+        translated = self.sugoi_sp_en.decode(results[0].hypotheses[0]).replace('<unk>', '')
+
+        return translated
+
     def translate(self, text, backend=None):
         if not text:
             return ""
@@ -82,6 +119,8 @@ class Translator():
             translated_text = self.translate_openai(text_to_translate)
         elif backend == "deepl":
             translated_text = self.translate_deepl(text_to_translate)
+        elif backend == "sugoi":
+            translated_text = self.translate_sugoi(text_to_translate)
         elif backend == "none":
             translated_text = text
         else:
@@ -113,4 +152,8 @@ if __name__ == "__main__":
 
     print(f"DeepL:")
     txt_en = tt.translate_deepl(txt_jp)
+    print(txt_en)
+
+    print(f"Sugoi:")
+    txt_en = tt.translate_sugoi(txt_jp)
     print(txt_en)
