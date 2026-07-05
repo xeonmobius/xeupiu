@@ -1,6 +1,7 @@
 {
     "version": "v2.2.1-alpha",
     "window_title": "Tokimeki Memorial",
+    "duckstation_path": "",
     "cmd_max_lines": 100,
     "verbose_level": 1,
     "fullscreen": false,
