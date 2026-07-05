@@ -52,6 +52,7 @@ class App:
             self.db_names = NameDatabase()
             self.db_notebook = NotebookDatabase()
             self.tr = Translator()
+            self.translation_visible = True
 
             self.window_id = get_window_by_title(CONFIG["window_title"])
 
@@ -263,6 +264,12 @@ class App:
         display_error("Project XEUPIU - Error!", f"An error has occurred:\n\"{e}\"\n\nPlease check full log at the folder named 'data/log/{timestamp}'")
 
         raise e from None
+
+    def toggle_translation(self):
+        self.translation_visible = not self.translation_visible
+        alpha = 0.9 if self.translation_visible else 0.0
+        for overlay in self.overlays:
+            overlay.root.attributes("-alpha", alpha)
 
     def log_everything(self, timestamp=None, print_history=None):
         if timestamp is None:
