@@ -255,36 +255,49 @@ class XeupiuControlPanel:
         self.deepL_key_entry = tk.Entry(left_frame, textvariable=deepL_key_var, show="*")
         self.deepL_key_entry.grid(row=8, column=1, sticky=tk.E)
 
-        tk.Label(left_frame, text="Verbose level:").grid(row=9, column=0, sticky=tk.W)
+        self.launch_ds_button = tk.Button(
+            left_frame,
+            text="LAUNCH DUCKSTATION",
+            command=self.launch_duckstation,
+            width=20,
+            bg="#4CAF50",
+            fg="white",
+            font=("Arial", 10, "bold"),
+        )
+        self.launch_ds_button.grid(row=9, column=0, columnspan=2, pady=5, sticky="ew")
+        if not CONFIG.get('duckstation_path', '').strip():
+            self.launch_ds_button.config(state="disabled")
+
+        tk.Label(left_frame, text="Verbose level:").grid(row=10, column=0, sticky=tk.W)
         self.verbose_var = tk.IntVar(value=CONFIG['verbose_level'])
         self.verbose_entry = tk.Entry(left_frame, textvariable=self.verbose_var)
         self.verbose_entry.grid(row=9, column=1, sticky=tk.E)
 
-        tk.Label(left_frame, text="History size:").grid(row=10, column=0, sticky=tk.W)
+        tk.Label(left_frame, text="History size:").grid(row=11, column=0, sticky=tk.W)
         self.history_size_var = tk.IntVar(value=CONFIG['history_size'])
         self.history_size_entry = tk.Entry(left_frame, textvariable=self.history_size_var)
-        self.history_size_entry.grid(row=10, column=1, sticky=tk.E)
+        self.history_size_entry.grid(row=11, column=1, sticky=tk.E)
 
         self.fullscreen_var = tk.IntVar(value=CONFIG['fullscreen'])
         self.fullscreen_checkbox = tk.Checkbutton(left_frame, text="Fullscreen", variable=self.fullscreen_var)
-        self.fullscreen_checkbox.grid(row=11, column=0, columnspan=2, sticky=tk.W)
+        self.fullscreen_checkbox.grid(row=12, column=0, columnspan=2, sticky=tk.W)
 
         self.run_button = tk.Button(left_frame, text="Save and run", command=self.save_and_run, width=15)
-        self.run_button.grid(row=12, column=0, pady=5, sticky=tk.E)
+        self.run_button.grid(row=13, column=0, pady=5, sticky=tk.E)
 
         root.protocol("WM_DELETE_WINDOW", self.close)
         self.exit_button = tk.Button(left_frame, text="Close app", command=self.close, width=15)
-        self.exit_button.grid(row=12, column=1, pady=5, padx=5, sticky=tk.W)
+        self.exit_button.grid(row=13, column=1, pady=5, padx=5, sticky=tk.W)
         self.exit_button.config(state="disabled")
 
         self.log_button = tk.Button(left_frame, text="(DEBUG) Log everything", command=self.log_everything)
-        self.log_button.grid(row=13, column=0, columnspan=2, pady=5)
+        self.log_button.grid(row=14, column=0, columnspan=2, pady=5)
 
         separator = ttk.Separator(left_frame, orient="horizontal")
-        separator.grid(row=14, columnspan=2, pady=10, sticky="ew")
+        separator.grid(row=15, columnspan=2, pady=10, sticky="ew")
 
         notes_label = tk.Label(left_frame, text="NOTES:", font=("Arial", 10, "bold"))
-        notes_label.grid(row=15, column=0, columnspan=2, sticky=tk.W)
+        notes_label.grid(row=16, column=0, columnspan=2, sticky=tk.W)
 
         notes_text = tk.Label(left_frame, text='1. When creating your save, please make sure to input the japanese '
                                                'name, surname, and nickname displayed above. This will guarantee that '
@@ -365,6 +378,27 @@ class XeupiuControlPanel:
         # we start working (in particular, setting attributes like the alpha are idle
         # events that don't process immediately)
         self.root.after_idle(self.root.after, 0, self._step)
+
+    def launch_duckstation(self):
+        """Launch DuckStation with XWayland env vars."""
+        path = CONFIG.get('duckstation_path', '').strip()
+        if not path:
+            display_error(
+                "DuckStation Path Not Set",
+                "Set the DuckStation executable path in config.json first.\n"
+                "Edit config.json: \"duckstation_path\": \"/path/to/duckstation\""
+            )
+            return
+
+        try:
+            parts = shlex.split(path)
+            subprocess.Popen(
+                ["env", "-u", "WAYLAND_DISPLAY", "QT_QPA_PLATFORM=xcb"] + parts,
+                start_new_session=True,
+            )
+            print(f"Launched DuckStation: {path}")
+        except Exception as e:
+            display_error("Launch Failed", f"Failed to launch DuckStation:\n{e}")
 
     def _step(self):
         assert self.app is not None
