@@ -255,6 +255,11 @@ class XeupiuControlPanel:
         self.deepL_key_entry = tk.Entry(left_frame, textvariable=deepL_key_var, show="*")
         self.deepL_key_entry.grid(row=8, column=1, sticky=tk.E)
 
+        tk.Label(left_frame, text="Translation backend:").grid(row=9, column=0, sticky=tk.W)
+        self.backend_var = tk.StringVar(value=CONFIG['translation']['backend'])
+        self.backend_menu = tk.OptionMenu(left_frame, self.backend_var, "deepl", "sugoi", "openai", "google_cloud")
+        self.backend_menu.grid(row=9, column=1, sticky=tk.E)
+
         self.launch_ds_button = tk.Button(
             left_frame,
             text="LAUNCH DUCKSTATION",
@@ -264,40 +269,40 @@ class XeupiuControlPanel:
             fg="white",
             font=("Arial", 10, "bold"),
         )
-        self.launch_ds_button.grid(row=9, column=0, columnspan=2, pady=5, sticky="ew")
+        self.launch_ds_button.grid(row=10, column=0, columnspan=2, pady=5, sticky="ew")
         if not CONFIG.get('duckstation_path', '').strip():
             self.launch_ds_button.config(state="disabled")
 
-        tk.Label(left_frame, text="Verbose level:").grid(row=10, column=0, sticky=tk.W)
+        tk.Label(left_frame, text="Verbose level:").grid(row=11, column=0, sticky=tk.W)
         self.verbose_var = tk.IntVar(value=CONFIG['verbose_level'])
         self.verbose_entry = tk.Entry(left_frame, textvariable=self.verbose_var)
-        self.verbose_entry.grid(row=9, column=1, sticky=tk.E)
+        self.verbose_entry.grid(row=11, column=1, sticky=tk.E)
 
-        tk.Label(left_frame, text="History size:").grid(row=11, column=0, sticky=tk.W)
+        tk.Label(left_frame, text="History size:").grid(row=12, column=0, sticky=tk.W)
         self.history_size_var = tk.IntVar(value=CONFIG['history_size'])
         self.history_size_entry = tk.Entry(left_frame, textvariable=self.history_size_var)
-        self.history_size_entry.grid(row=11, column=1, sticky=tk.E)
+        self.history_size_entry.grid(row=12, column=1, sticky=tk.E)
 
         self.fullscreen_var = tk.IntVar(value=CONFIG['fullscreen'])
         self.fullscreen_checkbox = tk.Checkbutton(left_frame, text="Fullscreen", variable=self.fullscreen_var)
-        self.fullscreen_checkbox.grid(row=12, column=0, columnspan=2, sticky=tk.W)
+        self.fullscreen_checkbox.grid(row=13, column=0, columnspan=2, sticky=tk.W)
 
         self.run_button = tk.Button(left_frame, text="Save and run", command=self.save_and_run, width=15)
-        self.run_button.grid(row=13, column=0, pady=5, sticky=tk.E)
+        self.run_button.grid(row=14, column=0, pady=5, sticky=tk.E)
 
         root.protocol("WM_DELETE_WINDOW", self.close)
         self.exit_button = tk.Button(left_frame, text="Close app", command=self.close, width=15)
-        self.exit_button.grid(row=13, column=1, pady=5, padx=5, sticky=tk.W)
+        self.exit_button.grid(row=14, column=1, pady=5, padx=5, sticky=tk.W)
         self.exit_button.config(state="disabled")
 
         self.log_button = tk.Button(left_frame, text="(DEBUG) Log everything", command=self.log_everything)
-        self.log_button.grid(row=14, column=0, columnspan=2, pady=5)
+        self.log_button.grid(row=15, column=0, columnspan=2, pady=5)
 
         separator = ttk.Separator(left_frame, orient="horizontal")
-        separator.grid(row=15, columnspan=2, pady=10, sticky="ew")
+        separator.grid(row=16, columnspan=2, pady=10, sticky="ew")
 
         notes_label = tk.Label(left_frame, text="NOTES:", font=("Arial", 10, "bold"))
-        notes_label.grid(row=16, column=0, columnspan=2, sticky=tk.W)
+        notes_label.grid(row=17, column=0, columnspan=2, sticky=tk.W)
 
         notes_text = tk.Label(left_frame, text='1. When creating your save, please make sure to input the japanese '
                                                'name, surname, and nickname displayed above. This will guarantee that '
@@ -355,6 +360,7 @@ class XeupiuControlPanel:
         CONFIG['verbose_level'] = self.verbose_var.get()
         CONFIG['history_size'] = self.history_size_var.get()
         CONFIG['translation']['deepl']['api_key'] = self.deepL_key_entry.get()
+        CONFIG['translation']['backend'] = self.backend_var.get()
 
         CONFIG.save()
 
