@@ -121,6 +121,15 @@ class OverlayWindow:
                               image=bg_img, compound='center')
         self.label.pack()
 
+        self.toggle_callback = None
+        self.toggle_button = tk.Button(
+            self.root, text="EN", font=("Arial", 10, "bold"),
+            bg="#333333", fg="#00ff00", activebackground="#555555",
+            width=3, height=1, command=self._on_toggle_click,
+            relief="flat", borderwidth=0
+        )
+        self.toggle_button.place(x=self.textbox_width - 40, y=2)
+
     def detect_gameobj(self, r: np.ndarray, g: np.ndarray, b: np.ndarray, img_ss: Image) -> bool:
         """
         Detects whether the game object to be overlayed is present in the screenshot.
@@ -191,6 +200,16 @@ class OverlayWindow:
         """
 
         self.label.config(fg=color)
+
+    def set_toggle_callback(self, callback):
+        self.toggle_callback = callback
+
+    def _on_toggle_click(self):
+        if self.toggle_callback:
+            self.toggle_callback()
+
+    def update_toggle_state(self, visible):
+        self.toggle_button.config(text="EN" if visible else "JP")
 
 
 if __name__ == "__main__":
