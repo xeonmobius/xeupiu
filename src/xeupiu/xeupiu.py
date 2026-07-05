@@ -290,6 +290,12 @@ class XeupiuControlPanel:
         self.run_button = tk.Button(left_frame, text="Save and run", command=self.save_and_run, width=15)
         self.run_button.grid(row=14, column=0, pady=5, sticky=tk.E)
 
+        self.toggle_btn = tk.Button(left_frame, text="JP/EN",
+            command=self._toggle_from_hotkey, bg="#444444", fg="white",
+            font=("Helvetica", 10))
+        self.toggle_btn.grid(row=14, column=2, pady=5, padx=(5, 0), sticky=tk.W)
+        self.toggle_btn.config(state="disabled")
+
         root.protocol("WM_DELETE_WINDOW", self.close)
         self.exit_button = tk.Button(left_frame, text="Close app", command=self.close, width=15)
         self.exit_button.grid(row=14, column=1, pady=5, padx=5, sticky=tk.W)
@@ -335,6 +341,7 @@ class XeupiuControlPanel:
 
         # Start main loop
         self.root = root
+        root.bind('<F2>', lambda e: self._toggle_from_hotkey())
         root.mainloop()
 
         # Restore original stdout
@@ -376,6 +383,7 @@ class XeupiuControlPanel:
         self.fullscreen_checkbox.config(state="disabled")
         self.run_button.config(state="disabled")
         self.exit_button.config(state="active")
+        self.toggle_btn.config(state="active")
 
         if self.deepL_key_entry.get() == "":
             display_error("Project XEUPIU - Error!", "DeepL key is not set. If any novel text is encountered, it will remain untranslated.")
@@ -425,6 +433,11 @@ class XeupiuControlPanel:
         except Exception as e:
             self.app.handle_error(e)
             raise e from None
+
+    def _toggle_from_hotkey(self):
+        if hasattr(self, 'app') and self.app:
+            self.app.toggle_translation()
+            self.app.overlay_tb.update_toggle_state(self.app.translation_visible)
 
     def close(self):
         print("Exiting...")

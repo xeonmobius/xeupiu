@@ -57,6 +57,7 @@ class App:
             self.window_id = get_window_by_title(CONFIG["window_title"])
 
             self.overlay_tb = TextboxOverlayWindow(self.window_id)
+            self.overlay_tb.set_toggle_callback(self._toggle_and_update_button)
             self.overlay_attrs = [AttributeOverlayWindow(self.window_id, i) for i in range(9)]
             self.overlay_dateymds = [YearMonthDayOverlayWindow(self.window_id, i) for i in range(3)]
             self.overlay_rects = [SelectableRectOverlay(self.window_id, i, self.db_notebook, None, self.tr) for i in range(len(SELECTABLE_RECTS))]
@@ -270,6 +271,10 @@ class App:
         alpha = 0.9 if self.translation_visible else 0.0
         for overlay in self.overlays:
             overlay.root.attributes("-alpha", alpha)
+
+    def _toggle_and_update_button(self):
+        self.toggle_translation()
+        self.overlay_tb.update_toggle_state(self.translation_visible)
 
     def log_everything(self, timestamp=None, print_history=None):
         if timestamp is None:
