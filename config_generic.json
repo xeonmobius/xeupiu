@@ -53,7 +53,7 @@
         }
     },
     "translation": {
-        "backend": "deepl",
+        "backend": "sugoi",
         "lang": "EN-US",
         "google_cloud": {
             "credential_path": ""
