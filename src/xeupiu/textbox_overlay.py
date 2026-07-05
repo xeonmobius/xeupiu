@@ -32,6 +32,15 @@ class TextboxOverlayWindow(OverlayWindow):
                               image=bg_img, compound='center')
         self.label.pack()
 
+        self.toggle_callback = None
+        self.toggle_button = tk.Button(
+            self.root, text="EN", font=("Arial", 10, "bold"),
+            bg="#333333", fg="#00ff00", activebackground="#555555",
+            width=3, height=1, command=self._on_toggle_click,
+            relief="flat", borderwidth=0
+        )
+        self.toggle_button.place(x=self.textbox_width - 40, y=2)
+
     def detect_gameobj(self, r: np.ndarray, g: np.ndarray, b: np.ndarray, img_ss: Image) -> bool:
         emerald_bg = np.mean((r < 30) & (g > 86) & (g < 137) & (b == 0)) > 0.4
         has_highlight = np.any((r > 100) & (r < 150) & (g > 170) & (g < 200) & (b > 30))
